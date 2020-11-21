@@ -1,4 +1,3 @@
 CREATE TABLE IF NOT EXISTS posts (
-  id TEXT,
-  status INTEGER
+  id TEXT PRIMARY KEY
 );
