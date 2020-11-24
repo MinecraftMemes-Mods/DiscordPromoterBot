@@ -32,5 +32,5 @@ while True:
         else:
             if submission.score >= getenv("DPB_MINSCORE"):
                 # stickied discord promo comment
-                comment_made = submission.reply(getenv("DPB_MESSAGE"))
+                comment_made = submission.reply(getenv("DPB_COMMENT"))
                 comment_made.mod.distinguish(sticky=True)
