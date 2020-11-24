@@ -1,11 +1,11 @@
-import time
-from praw import Reddit
+import praw
 from os import getenv
+from time import sleep
 from sql_wrapper import SQL
 from dotenv import load_dotenv
 load_dotenv()
 
-reddit = Reddit(
+reddit = praw.Reddit(
     client_id=getenv('DPB_CLIENTID'),
     client_secret=getenv('DPB_CLIENTSECRET'),
     user_agent=f"{getenv('DPB_SUBREDDIT')}'s DiscordPromoterBot'",
@@ -15,22 +15,27 @@ reddit = Reddit(
 
 db = SQL('posts.db')
 
-submission_stream = reddit.subreddit(
-    getenv('DPB_SUBREDDIT')).stream.submissions()
-
 while True:
-    for submission in submission_stream:
-        # stops when posts older than 12 hours are reached
-        # if submission.id in database:
-        # break
+    hot_posts = reddit.subreddit(getenv('DPB_SUBREDDIT')).hot()
+    for post in hot_posts:
+        if db.get(post.id):
+            # post already in db, so a comment has,
+            # already been made.
+            continue
+        elif post.score < int(getenv('DPB_MINSCORE')):
+            # score less than required
+            continue
+        elif post.distinguished or post.stickied:
+            # we don't want to replace pinned comments on mod posts
+            continue
+        elif post.comments[0].distinguished:
+            # we don't want to replace pinned comments on regular posts either
+            continue
 
-        minutes_since_post = (time.time() - submission.created_utc) / 60
-        if minutes_since_post > 720:  # checks post is within past 12 hours
-            pass
-            # db.remove(previous_post_older_than_12 hours)
-            # db.add(submission.id)
-        else:
-            if submission.score >= getenv("DPB_MINSCORE"):
-                # stickied discord promo comment
-                comment_made = submission.reply(getenv("DPB_COMMENT"))
-                comment_made.mod.distinguish(sticky=True)
+        # all checks have passed. we can make the comment,
+        # and add the post to the database
+        post.reply(getenv('DPB_COMMENT'))
+        db.add(post.id)
+
+    # let's not get suspended from the API, shall we?
+    sleep(int(getenv('DPB_INTERVAL')))
