@@ -14,7 +14,8 @@ class SQL:
         """
 
         params = (id,)
-        self._c.execute('INSERT INTO posts VALUES (?);', params)
+        self._c.execute(
+            'INSERT INTO posts VALUES (?, strftime("%s", "now"));', params)
 
     def get(self, id) -> bool:
         """

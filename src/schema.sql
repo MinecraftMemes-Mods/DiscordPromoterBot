@@ -1,3 +1,4 @@
 CREATE TABLE IF NOT EXISTS posts (
-  id TEXT PRIMARY KEY
+  id TEXT PRIMARY KEY,
+  date_added NUMERIC
 );
