@@ -34,7 +34,8 @@ while True:
 
         # all checks have passed. we can make the comment,
         # and add the post to the database
-        post.reply(getenv('DPB_COMMENT'))
+        reply = post.reply(getenv('DPB_COMMENT'))
+        reply.mod().distinguish(how='yes', sticky=True)
         db.add(post.id)
 
     # let's not get suspended from the API, shall we?
