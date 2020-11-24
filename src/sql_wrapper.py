@@ -5,10 +5,10 @@ class SQL:
     '''Provides an easy-to-use library for dealing with the database within the project'''
 
     def __init__(self, filename) -> None:
-        _conn = sqlite3.connect(filename)
-        self._c = _conn.cursor()
+        self._conn = sqlite3.connect(filename)
+        self._c = self._conn.cursor()
 
-    def add(self, id) -> None:
+    def add(self, id) -> bool:
         """
         Add a post to the database.
         """
@@ -16,6 +16,7 @@ class SQL:
         params = (id,)
         self._c.execute(
             'INSERT INTO posts VALUES (?, strftime("%s", "now"));', params)
+        self._conn.commit()
 
     def get(self, id) -> bool:
         """
