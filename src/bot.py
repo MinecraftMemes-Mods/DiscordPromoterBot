@@ -1,6 +1,6 @@
 import praw
 from os import getenv
-from time import sleep
+from time import sleep, time
 from sql_wrapper import SQL
 from dotenv import load_dotenv
 load_dotenv()
@@ -30,6 +30,9 @@ while True:
             continue
         elif post.comments[0].distinguished:
             # we don't want to replace pinned comments on regular posts either
+            continue
+        elif (time()-post.created_utc)/60 > int(getenv('DPB_MAXAGE')):
+            # we don't want to post comments on old posts
             continue
 
         # all checks have passed. we can make the comment,
