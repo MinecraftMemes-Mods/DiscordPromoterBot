@@ -13,7 +13,7 @@ reddit = praw.Reddit(
     password=getenv('DPB_PASSWORD'),
 )
 
-db = SQL('posts.db')
+db = SQL('../posts.db')
 
 while True:
     hot_posts = reddit.subreddit(getenv('DPB_SUBREDDIT')).hot()
